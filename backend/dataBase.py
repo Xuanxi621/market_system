@@ -57,7 +57,7 @@ if __name__ == '__main__':
     data_text = dataBaseText("market.db")
     # data_text.insertUser()
     # data_text.deleteUser()
-    data_text.common.commit()
+    # data_text.common.commit()
     users = data_text.selectUser()
     data_text.common.close()
     for user in users:
