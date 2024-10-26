@@ -1,7 +1,7 @@
 import hashlib
 
 
-# MD5并不是太安全,改进准备采用SHA-256
+# MD5并不是太安全,改进采用SHA-256
 
 def md5_encrypt(data):
     md5 = hashlib.md5()
