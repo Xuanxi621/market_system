@@ -18,9 +18,51 @@ class Edit_Pwd(BaseModel):
     new_password: str = None
 
 
+class Goods(BaseModel):
+    good_name: str = None
+    price: float = None
+    sales: int = None
+    manufacture_date: str = None
+    expiration_date: str = None
+
+
+class Edit_Goods(BaseModel):
+    id: int = None
+    price: float = None
+    sales: int = None
+    manufacture_date: str = None
+    expiration_date: str = None
+
+
 @app.get("/")
 async def sayHello():
     return {"Hello": "World"}
+
+
+@app.post("/add_goods")
+async def add_goods(goods: Goods):
+    database_operate = dataBaseOperate('market.db')
+    database_operate.insertGoods(goods.good_name, goods.price, goods.sales, goods.manufacture_date,
+                                 goods.expiration_date)
+    return 200
+
+
+@app.post("/modify_goods")
+async def modify_goods(edit_goods: Edit_Goods):
+    database_operate = dataBaseOperate('market.db')
+    database_operate.updateGoods(edit_goods.price, edit_goods.sales, edit_goods.manufacture_date,
+                                 edit_goods.expiration_date, edit_goods.id)
+    return 200
+
+
+@app.get("/show_goods")
+async def show_goods():
+    return dataBaseOperate('market.db').selectGoodsList()
+
+
+@app.get("/statistics")
+async def statistics():
+    return dataBaseOperate('market.db').selectGoodsOrderSales()
 
 
 @app.post("/login")
@@ -42,8 +84,8 @@ async def register(user: User):
 @app.post('/edit_pwd')
 async def modify_pwd(edit_pwd: Edit_Pwd):
     database_operate = dataBaseOperate('market.db')
-    print(edit_pwd.password)
-    print(md5_encrypt(edit_pwd.password))
+    # print(edit_pwd.password)
+    # print(md5_encrypt(edit_pwd.password))
     try:
         user_id = database_operate.selectUserId(edit_pwd.name, md5_encrypt(edit_pwd.password))[0][0]
     except Exception as e:

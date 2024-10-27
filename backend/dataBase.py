@@ -1,5 +1,4 @@
 import sqlite3
-from MD5Util import md5_encrypt
 
 
 class dataBase:
@@ -20,7 +19,7 @@ class dataBase:
 
     def goodsDataBase(self):
         create_goods_sql = """
-            create table if not exist goods(
+            create table if not exists goods(
                 id integer primary key autoincrement,
                 goods_name text,
                 price float,
@@ -40,7 +39,7 @@ class dataBaseOperate(dataBase):
 
     def insertGoods(self, _goods_name, _price, _sales, _manufacture_date, _expiration_date):
         insert_goods_sql = """
-            insert into goods(goods_name,price,sales,manufacture_date,expiration_date) values('%s','%f','%d','%d','%d')
+            insert into goods(goods_name,price,sales,manufacture_date,expiration_date) values('%s','%f','%d','%s','%s')
         """ % (_goods_name, _price, _sales, _manufacture_date, _expiration_date)
 
         self.cur.execute(insert_goods_sql)
@@ -121,12 +120,25 @@ class dataBaseOperate(dataBase):
         self.cur.execute(select_goodsId_sql)
         return self.cur.fetchall()
 
+    def selectGoodsOrderSales(self):
+        select_goods_order_sales_sql = """
+            select * from goods order by sales desc 
+        """
+
+        self.cur.execute(select_goods_order_sales_sql)
+        return self.cur.fetchall()
+
 
 if __name__ == '__main__':
     data_operate = dataBaseOperate("market.db")
+    # data_operate.insertGoods("beef", 124.8, 12, "2024-10-24 18:00:00",
+    #                          "2024-11-24 18:00:00")
+    # print(data_operate.selectGoodsList())
     # data_operate.insertUser("string123", md5_encrypt("string"))
     # data_operate.deleteUser()
     # data_operate.common.commit()
     # users = data_operate.selectUserList()
     # user = data_operate.selectUserId("string123", md5_encrypt("string"))[0][0]
     # data_operate.common.close()
+
+    print(data_operate.selectGoodsOrderSales())
