@@ -8,7 +8,7 @@ app = FastAPI()
 
 
 class User(BaseModel):
-    name: str = None
+    username: str = None
     password: str = None
 
 
@@ -19,7 +19,7 @@ class Edit_Pwd(BaseModel):
 
 
 class Goods(BaseModel):
-    good_name: str = None
+    goods_name: str = None
     price: float = None
     sales: int = None
     manufacture_date: str = None
@@ -27,7 +27,8 @@ class Goods(BaseModel):
 
 
 class Edit_Goods(BaseModel):
-    id: int = None
+    good_id: int = None
+    goods_name: str = None
     price: float = None
     sales: int = None
     manufacture_date: str = None
@@ -42,7 +43,7 @@ async def sayHello():
 @app.post("/add_goods")
 async def add_goods(goods: Goods):
     database_operate = dataBaseOperate('market.db')
-    database_operate.insertGoods(goods.good_name, goods.price, goods.sales, goods.manufacture_date,
+    database_operate.insertGoods(goods.goods_name, goods.price, goods.sales, goods.manufacture_date,
                                  goods.expiration_date)
     return 200
 
@@ -51,7 +52,7 @@ async def add_goods(goods: Goods):
 async def modify_goods(edit_goods: Edit_Goods):
     database_operate = dataBaseOperate('market.db')
     database_operate.updateGoods(edit_goods.price, edit_goods.sales, edit_goods.manufacture_date,
-                                 edit_goods.expiration_date, edit_goods.id)
+                                 edit_goods.expiration_date, edit_goods.good_id)
     return 200
 
 
@@ -67,17 +68,25 @@ async def statistics():
 
 @app.post("/login")
 async def login(user: User):
+    print(type(user))
     database_operate = dataBaseOperate('market.db')
-    _user = database_operate.selectUser(user.name, md5_encrypt(user.password))
+    _user = database_operate.selectUser(user.username, md5_encrypt(user.password))
     if not _user:
         return 201
+    return 200
+
+
+@app.get("/del_goods/{goods_id}")
+async def delete_goods(goods_id: int):
+    database_operate = dataBaseOperate('market.db')
+    database_operate.deleteGoods(goods_id)
     return 200
 
 
 @app.post("/register")
 async def register(user: User):
     database_operate = dataBaseOperate('market.db')
-    database_operate.insertUser(user.name, md5_encrypt(user.password))
+    database_operate.insertUser(user.username, md5_encrypt(user.password))
     return 200
 
 

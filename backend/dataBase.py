@@ -24,8 +24,8 @@ class dataBase:
                 goods_name text,
                 price float,
                 sales int,
-                manufacture_date integer,
-                expiration_date integer
+                manufacture_date text,
+                expiration_date text
             )
         """
         self.cur.execute(create_goods_sql)
@@ -61,7 +61,20 @@ class dataBaseOperate(dataBase):
         """
 
         self.cur.execute(select_goods_sql)
-        return self.cur.fetchall()
+        data_list = self.cur.fetchall()
+        output_list = []
+        for item in data_list:
+            output_dict = {
+                "good_id": item[0],
+                "goods_name": item[1],
+                "price": item[2],
+                "sales": item[3],
+                "manufacture_date": item[4],
+                "expiration_date": item[5]
+            }
+            output_list.append(output_dict)
+
+        return output_list
 
     def selectUserList(self):
         select_user_sql = """
@@ -79,12 +92,22 @@ class dataBaseOperate(dataBase):
         self.cur.execute(select_user_sql)
         return self.cur.fetchall()
 
-    def deleteUser(self):
+    def deleteUser(self, _id):
         del_user_sql = """
-            delete from users where id = 1
-        """
+            delete from users where id = '%d'
+        """ % _id
 
         self.cur.execute(del_user_sql)
+        self.common.commit()
+        self.common.close()
+
+    def deleteGoods(self, _id):
+        del_goods_sql = """
+            delete from goods where id = '%d'
+        """ % _id
+        self.cur.execute(del_goods_sql)
+        self.common.commit()
+        self.common.close()
 
     def updateUserPwd(self, _password, _id):
         update_user_sql = """
@@ -97,7 +120,7 @@ class dataBaseOperate(dataBase):
 
     def updateGoods(self, _price, _sales, _manufacture_date, _expiration_date, _id):
         update_goods_sql = """
-            update goods set price = '%f',sales='%d',manufacture_date='%d', expiration_date='%d' where id = '%d'
+            update goods set price = '%f',sales='%d',manufacture_date='%s', expiration_date='%s' where id = '%d'
         """ % (_price, _sales, _manufacture_date, _expiration_date, _id)
 
         self.cur.execute(update_goods_sql)
@@ -126,7 +149,21 @@ class dataBaseOperate(dataBase):
         """
 
         self.cur.execute(select_goods_order_sales_sql)
-        return self.cur.fetchall()
+        data_list = self.cur.fetchall()
+        output_list = []
+        for item in data_list:
+            output_dict = {
+                "good_id": item[0],
+                "goods_name": item[1],
+                "price": item[2],
+                "sales": item[3],
+                "manufacture_date": item[4],
+                "expiration_date": item[5]
+            }
+
+            output_list.append(output_dict)
+
+        return output_list
 
 
 if __name__ == '__main__':
@@ -141,4 +178,5 @@ if __name__ == '__main__':
     # user = data_operate.selectUserId("string123", md5_encrypt("string"))[0][0]
     # data_operate.common.close()
 
-    print(data_operate.selectGoodsOrderSales())
+    # print(data_operate.selectGoodsOrderSales())
+    data_operate.deleteGoods(3)
